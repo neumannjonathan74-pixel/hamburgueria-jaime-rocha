@@ -444,7 +444,7 @@ function toast(html) {
 
     // 2) as camadas se separam até a posição da foto aberta (começam a se mexer junto com a troca)
     const sep = smooth(clamp01((e - CROSSFADE * 0.25) / (1 - CROSSFADE * 0.25)));
-    const bob = Math.sin(time * 1.3) * 4 * e; // flutuação leve, igual para todas
+    const bob = Math.sin(time * 1.1) * 8 * e; // flutuação leve, igual para todas
     // as camadas ficam opacas logo no início, por baixo da foto: sem "apagão" na troca
     const layerOpacity = e > 0.002 ? Math.min(1, fade * 5 + 0.2) : 0;
     for (const L of layers) {
@@ -470,13 +470,12 @@ function toast(html) {
 
   new ResizeObserver(() => { unit = burger.clientHeight / ORIGINAL_H; render(); }).observe(burger);
 
-  // acessibilidade: sem animação, mostra o lanche aberto (todas as partes à vista)
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    hero.classList.add("is-static");
-    open = 1;
-    render();
-    return;
-  }
+  // lanche sempre aberto; só flutua de leve (sem abrir com a rolagem)
+  hero.classList.add("is-still");
+  open = 1;
+  scrollP = 1;
+  render();
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
   const M = window.Motion;
 
@@ -486,41 +485,16 @@ function toast(html) {
     M.animate(burger, { opacity: [0, 1] }, { duration: 0.8, ease: "easeOut" });
   }
 
-  if (M && M.scroll && M.motionValue && M.springValue && M.frame) {
-    // mesmo modelo da skill: valor de rolagem -> mola -> estilo, sem re-render
-    const target = M.motionValue(0);
-    const spring = M.springValue(target, { stiffness: 140, damping: 26, mass: 0.7, restDelta: 0.0004 });
-    spring.on("change", (v) => { open = v; });
+  // flutuação: só roda enquanto o hero está na tela
+  const floatLoop = (t) => { time = t / 1000; render(); rafId = requestAnimationFrame(floatLoop); };
+  let rafId = 0;
+  new IntersectionObserver(([en]) => {
+    cancelAnimationFrame(rafId);
+    if (en.isIntersecting) rafId = requestAnimationFrame(floatLoop);
+  }).observe(hero);
 
-    M.scroll((p) => {
-      scrollP = p;
-      target.set(openFromScroll(p));
-    }, { target: hero, offset: ["start start", "end end"] });
-
-    // o laço de desenho só roda enquanto o hero está na tela
-    const tick = ({ timestamp }) => { time = timestamp / 1000; render(); };
-    M.inView(hero, () => {
-      M.frame.update(tick, true);
-      return () => M.cancelFrame(tick);
-    }, { amount: 0 });
-
-    // enquanto o palco ocupa a tela, os botões flutuantes somem (CSS só aplica no celular)
-    M.inView(hero, () => {
-      document.body.classList.add("in-hero");
-      return () => document.body.classList.remove("in-hero");
-    }, { margin: "0px 0px -60% 0px" });
-  } else {
-    // plano B se o Motion não carregar (sem internet, CDN fora do ar)
-    const read = () => {
-      const r = hero.getBoundingClientRect();
-      scrollP = clamp01(-r.top / Math.max(1, hero.offsetHeight - innerHeight));
-      open += (openFromScroll(scrollP) - open) * 0.14;
-    };
-    const loop = (t) => { time = t / 1000; read(); render(); requestAnimationFrame(loop); };
-    requestAnimationFrame(loop);
-  }
-
-  render();
+  // no celular, os botões flutuantes somem enquanto o hero (que já tem o botão de WhatsApp) está na tela
+  new IntersectionObserver(([en]) => document.body.classList.toggle("in-hero", en.isIntersecting), { threshold: 0.6 }).observe(hero);
 })();
 
 /* ---------- Animação de entrada ---------- */
