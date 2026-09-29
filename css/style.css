@@ -314,6 +314,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* texto de apoio que no celular fica abaixo da animação */
 .hero-intro { display: none; }
 
+/* lanche fixo aberto: sem trilha de rolagem, o palco ocupa só uma tela */
+.hero.is-still { height: auto; }
+.hero.is-still .hero__stage { position: relative; top: 0; }
+.hero.is-still .scroll-hint { display: none; }
+
 /* sem animação para quem prefere menos movimento: lanche já aberto, sem trilha */
 .hero.is-static { height: auto; }
 .hero.is-static .hero__stage { position: relative; top: 0; height: auto; min-height: 640px; padding: 40px 0; }
