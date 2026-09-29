@@ -1,0 +1,41 @@
+SITE HAMBURGUERIA JAIME ROCHA
+=============================
+
+Arquivos
+  index.html     -> estrutura e textos do site
+  css/style.css  -> visual (cores no topo do arquivo, em :root)
+  js/main.js     -> cardápio, preços, horários, WhatsApp e iFood (tudo no topo do arquivo)
+
+Como editar (js/main.js)
+  - PREÇOS: em CARDAPIO, troque  preco: null  por um valor, ex.:  preco: 34.9
+    Com preço preenchido, o site mostra o valor e soma o total do pedido.
+  - LINK DO iFOOD: em CONFIG.ifood, cole o link direto da loja no iFood.
+  - HORÁRIOS: em CONFIG.horarios (o status "Aberto agora / Fechado" é automático).
+  - DESTAQUES: em DESTAQUES, escolha os 4 lanches da seção "Os hits da chapa".
+
+Fotos
+  As fotos atuais são de banco de imagens (Unsplash, uso gratuito).
+  O ideal é trocar por fotos reais dos lanches da casa: coloque os arquivos numa
+  pasta "img/" e troque os endereços "https://images.unsplash.com/..." no
+  index.html e no js/main.js por "img/nome-da-foto.jpg".
+
+Animação do hambúrguer (início do site)
+  - O lanche começa fechado e vai se abrindo camada por camada conforme a
+    pessoa rola a tela. Feito com a biblioteca Motion (antigo Framer Motion).
+  - Começa com a foto do lanche fechado (img/burger/fechado.webp), que se
+    transforma nas camadas (img/burger/*.webp, fundo já removido) e abre.
+  - Posições no index.html: data-close = quanto cada camada fica junta.
+  - Tamanho: em js/main.js, scaleClosed (fechado) e scaleOpen (aberto).
+  - Duração da rolagem: em css/style.css, --track (250vh no computador,
+    230vh no celular). Quanto maior, mais devagar abre.
+  - Sem internet para carregar o Motion, o site usa um plano B e a animação
+    continua funcionando. Quem ativa "reduzir movimento" no aparelho vê o
+    lanche já aberto, sem animação.
+
+Pedido pelo WhatsApp
+  O cliente monta o pedido (retirada no balcão), digita o nome e o site abre o
+  WhatsApp (54) 99927-9500 com a mensagem pronta.
+
+Publicar
+  É um site estático: basta enviar a pasta inteira para qualquer hospedagem
+  (Hostinger, HostGator, Netlify, Vercel, GitHub Pages...).
